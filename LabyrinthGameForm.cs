@@ -15,12 +15,15 @@ namespace Labyrinth
 
         private int time = 0;
         private int coins = 0;
+
+        Random random = new Random();
         public LabyrinthGameForm(char[,] map)
         {
             InitializeComponent();
             this.map = map;
             MazeSize = new int[map.GetLength(0), map.GetLength(1)];
             InitializeMaze();
+            GenerateCoins();
             timer.Start();
         }
 
@@ -38,6 +41,20 @@ namespace Labyrinth
             this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.Text = "Лабиринт";
+        }
+
+        private void GenerateCoins()
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for(int j = 0; j < map.GetLength(1); j++)
+                {
+                    if(map[i, j] == ' ')
+                    {
+                        map[i, j] = random.Next(map.GetLength(0)) == map.GetLength(0)-1 ? '0' : ' ';
+                    }
+                }
+            }
         }
 
         private void LabyrinthGameForm_Paint(object sender, PaintEventArgs e)
