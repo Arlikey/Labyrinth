@@ -27,6 +27,12 @@ namespace Labyrinth
 
         private void InitializeMaze()
         {
+            int cellWidth = this.ClientSize.Width / MazeSize.GetLength(1);
+            int cellHeight = this.ClientSize.Height / MazeSize.GetLength(0);
+            int cellSize = Math.Min(cellWidth, cellHeight);
+
+            CellSize = cellSize;
+
             this.ClientSize = new Size((CellSize * MazeSize.GetLength(1)), (CellSize * MazeSize.GetLength(0)));
             this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
