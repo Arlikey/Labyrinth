@@ -14,6 +14,7 @@ namespace Labyrinth
         private char[,] map;
 
         private int time = 0;
+        private int coins = 0;
         public LabyrinthGameForm(char[,] map)
         {
             InitializeComponent();
@@ -47,7 +48,7 @@ namespace Labyrinth
             {
                 for (int j = 0; j < MazeSize.GetLength(1); j++)
                 {
-                    Brush brush = map[i, j] == '*' ? Brushes.Black : Brushes.White;
+                    Brush brush = map[i, j] == '*' ? Brushes.Black : map[i, j] == '0' ? Brushes.Gold : Brushes.White;
                     g.FillRectangle(brush, j * CellSize, i * CellSize, CellSize, CellSize);
                 }
             }
@@ -82,11 +83,20 @@ namespace Labyrinth
                 Invalidate();
             }
 
+            if (map[newY, newX] == '0')
+            {
+                playerX = newX;
+                playerY = newY;
+                map[newY, newX] = ' ';
+                coins++;
+                Invalidate();
+            }
+
             if (playerX == map.GetLength(1) - 1 || playerY == map.GetLength(0) - 1)
             {
                 timer.Stop();
                 var dialogResult = MessageBox.Show($"Вы прошли лабиринт!\n\nПотрачено времени на прохождение : {TimeSpan.FromSeconds(time)}" +
-                    $"\n\nХотите вернуться в главное меню?", "Победа!", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    $"\n\nСобрано монет : {coins}\n\nХотите вернуться в главное меню?", "Победа!", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if(dialogResult == DialogResult.Yes)
                 {
                     Close();
