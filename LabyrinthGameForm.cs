@@ -5,8 +5,7 @@ namespace Labyrinth
 {
     public partial class LabyrinthGameForm : Form
     {
-        private int CellSize = 40;
-        private int[,] MazeSize;
+        private int CellSize;
 
         private int playerX = 1;
         private int playerY = 1;
@@ -21,7 +20,6 @@ namespace Labyrinth
         {
             InitializeComponent();
             this.map = map;
-            MazeSize = new int[map.GetLength(0), map.GetLength(1)];
             InitializeMaze();
             GenerateCoins();
             timer.Start();
@@ -31,13 +29,13 @@ namespace Labyrinth
 
         private void InitializeMaze()
         {
-            int cellWidth = this.ClientSize.Width / MazeSize.GetLength(1);
-            int cellHeight = this.ClientSize.Height / MazeSize.GetLength(0);
+            int cellWidth = this.ClientSize.Width / map.GetLength(1);
+            int cellHeight = this.ClientSize.Height / map.GetLength(0);
             int cellSize = Math.Min(cellWidth, cellHeight);
 
             CellSize = cellSize;
 
-            this.ClientSize = new Size((CellSize * MazeSize.GetLength(1)), (CellSize * MazeSize.GetLength(0)));
+            this.ClientSize = new Size((CellSize * map.GetLength(1)), (CellSize * map.GetLength(0)));
             this.MaximizeBox = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.Text = "Лабиринт";
@@ -51,7 +49,7 @@ namespace Labyrinth
                 {
                     if(map[i, j] == ' ')
                     {
-                        map[i, j] = random.Next(map.GetLength(0)) == map.GetLength(0)-1 ? '0' : ' ';
+                        map[i, j] = random.Next(Math.Max(map.GetLength(0), map.GetLength(1))) == map.GetLength(0)-1 ? '0' : ' ';
                     }
                 }
             }
@@ -61,9 +59,9 @@ namespace Labyrinth
         {
             Graphics g = e.Graphics;
 
-            for (int i = 0; i < MazeSize.GetLength(0); i++)
+            for (int i = 0; i < map.GetLength(0); i++)
             {
-                for (int j = 0; j < MazeSize.GetLength(1); j++)
+                for (int j = 0; j < map.GetLength(1); j++)
                 {
                     Brush brush = map[i, j] == '*' ? Brushes.Black : map[i, j] == '0' ? Brushes.Gold : Brushes.White;
                     g.FillRectangle(brush, j * CellSize, i * CellSize, CellSize, CellSize);
@@ -83,13 +81,13 @@ namespace Labyrinth
                     newY = Math.Max(0, playerY - 1);
                     break;
                 case Keys.Down:
-                    newY = Math.Min(MazeSize.GetLength(0) - 1, playerY + 1);
+                    newY = Math.Min(map.GetLength(0) - 1, playerY + 1);
                     break;
                 case Keys.Left:
                     newX = Math.Max(0, playerX - 1);
                     break;
                 case Keys.Right:
-                    newX = Math.Min(MazeSize.GetLength(1) - 1, playerX + 1);
+                    newX = Math.Min(map.GetLength(1) - 1, playerX + 1);
                     break;
             }
 
@@ -109,7 +107,7 @@ namespace Labyrinth
                 Invalidate();
             }
 
-            if (playerX == map.GetLength(1) - 1 || playerY == map.GetLength(0) - 1)
+            if (playerX == map.GetLength(1) - 1 || playerY == map.GetLength(0) - 1 || playerX == 0 || playerY == 0)
             {
                 timer.Stop();
                 var dialogResult = MessageBox.Show($"Вы прошли лабиринт!\n\nПотрачено времени на прохождение : {TimeSpan.FromSeconds(time)}" +
